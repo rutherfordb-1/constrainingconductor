@@ -133,7 +133,7 @@ class constrainingConductor():
 
 
     def _generateWindows(self):
-        """ Build zwindows out from the center of mass"""
+        """ Build simWindows out from the center of mass"""
         print("*"*20)
         print("Generating windows from center of mass...")
         print("*"*20)
@@ -167,7 +167,7 @@ class constrainingConductor():
         tracer_list = np.random.choice(top_waters, self._n_tracers, replace=False)
         self._tracers =  [atoms[t].residue.index+1 for t in tracer_list]
 
-    def writePullingMdp(self, zWindows, filename="pulling", 
+    def writePullingMdp(self, simWindows, filename="pulling", 
         pull_coord_k=1000, pull_coord_rate=0,
         dt=0.002, t_pulling=1e3, pull_nstfout=5000, pull_nstxout=5000,
         moving=False, z_windows=None,
@@ -189,13 +189,13 @@ class constrainingConductor():
         for i, tracer in enumerate(self._tracers):
             xyz = self._getTracerCoordinates(tracer)
             if not moving:
-                xyz[2] = zWindows[i]
+                xyz[2] = simWindows[i]
             pull_coord_origins.append(xyz)
 
         # Pulling rates
         pull_coord_rate_list = np.zeros(self._n_tracers)
         if moving:
-            for i, (tracer, window) in enumerate(zip(self._tracers, zWindows)):
+            for i, (tracer, window) in enumerate(zip(self._tracers, simWindows)):
                 pull_coord_rate_list[i] = self._calcPullingRate(tracer, window, t_pulling)
 
 

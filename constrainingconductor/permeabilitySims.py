@@ -1,6 +1,7 @@
 from constrainingconductor import constrainingConductor
 import os
 import pdb
+import numpy as np
 import subprocess
 dt = 0.002
 sweepStart=0
@@ -32,17 +33,24 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
 
         for stage in range(1,6):
             stageInformation = { 
-                1: {'filename':"Stage1_Weak{}".format(sim), 'pull_coord_k':40, }, 
-                2: {'filename':"Stage2_Strong{}".format(sim), 'pull_coord_k':500, }, 
+                1: {'filename':"Stage1_Weak{}".format(sim), 'pull_coord_k':40, 
+                    'simWindows':master.windows[sim]*np.ones(master._n_tracers)}, 
+                2: {'filename':"Stage2_Strong{}".format(sim), 'pull_coord_k':500, 
+                    'simWindows':master.windows[sim]*np.ones(master._n_tracers)}, 
                 3: {'filename':"Stage3_Moving{}".format(sim), 
-                    'pull_coord_k':500, 'moving':True, 'P':None}, 
-                4: {'filename':"Stage4_Eq{}".format(sim), 'pull_coord_k':1000, }, 
+                    'pull_coord_k':500, 'moving':True, 'P':None,
+                    'simWindows': master.windows[sim::master.n_sims]
+                    }, 
+                4: {'filename':"Stage4_Eq{}".format(sim), 'pull_coord_k':1000, 
+                    'simWindows': master.windows[sim::master.n_sims]},
                 5: {'filename':"Stage5_ZCon{}".format(sim), 'pull_coord_k':1000, 
-                    'pull_nstfout':int(0.01/dt)} 
+                    'pull_nstfout':int(0.01/dt), 
+                    'simWindows': master.windows[sim::master.n_sims]
+                    } 
                 }
 
-            simWindows = master.windows[sim::master.n_sims]
-            master.writePullingMdp(simWindows, **stageInformation[stage])
+            #simWindows = master.windows[sim::master.n_sims]
+            master.writePullingMdp(**stageInformation[stage])
             master.grompp(stageInformation[stage]['filename'])
             master.mdrun(stageInformation[stage]['filename'])
             master.grofile = stageInformation[stage]['filename']+".gro"
