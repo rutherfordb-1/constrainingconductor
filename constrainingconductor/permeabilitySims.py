@@ -1,8 +1,9 @@
-from constrainingConductor import constrainingConductor
+from constrainingconductor import constrainingConductor
 import os
 import pdb
 import subprocess
 dt = 0.002
+sweepStart=0
 n_sweeps=30
 
 baseDir = os.getcwd()
@@ -15,7 +16,7 @@ topfile='pureDSPC.top'
 master = constrainingConductor(grofile,topfile, auto_detect=True,center=True,baseDir=baseDir, GMX_CMD=GMX_CMD, MDRUN_CMD=MDRUN_CMD)
 originalGrofile = master.grofile
 master.writeWindows('z_windows.out')
-for sweep in range(n_sweeps):
+for sweep in range(sweepStart, sweepStart+n_sweeps):
     print('-'*10 + 'Beginning sweep{}'.format(sweep) + '-'*10)
     master.gro = originalGrofile
     master.selectTracers()
