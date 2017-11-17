@@ -13,7 +13,7 @@ class constrainingConductor():
     all stages of Z constraining"""
     def __init__(self, grofile, topfile, z0=1.0, dz=0.2, n_windows=40, n_tracers=8, 
             z_windows=None, auto_detect=True, center=True,
-            GMX_CMD="gmx", MDRUN_CMD="mdrun",MPIRUN_CMD="mpirun -n 1", baseDir=None):
+            GMX_CMD="gmx", MDRUN_CMD="mdrun",MPIRUN_CMD="", baseDir=None):
 
         """
         Parameters
