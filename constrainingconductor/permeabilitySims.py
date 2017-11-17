@@ -19,10 +19,11 @@ originalGrofile = master.grofile
 master.writeWindows('z_windows.out')
 for sweep in range(sweepStart, sweepStart+n_sweeps):
     print('-'*10 + 'Beginning sweep{}'.format(sweep) + '-'*10)
-    master.gro = originalGrofile
+    master.grofile = originalGrofile
     master.selectTracers()
 
     for sim in range(master.n_sims):
+        master.grofile = originalGrofile
         sim_folder = 'sweep{}/Sim{}'.format(sweep,sim)
         p = subprocess.Popen('mkdir -p {}'.format(sim_folder), shell=True, 
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
