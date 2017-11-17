@@ -13,7 +13,7 @@ class constrainingConductor():
     all stages of Z constraining"""
     def __init__(self, grofile, topfile, z0=1.0, dz=0.2, n_windows=40, n_tracers=8, 
             z_windows=None, auto_detect=True, center=True,
-            GMX_CMD="gmx", MDRUN_CMD="mdrun",baseDir=None):
+            GMX_CMD="gmx", MDRUN_CMD="mdrun",MPIRUN_CMD="mpirun -n 1", baseDir=None):
 
         """
         Parameters
@@ -43,6 +43,7 @@ class constrainingConductor():
         self._topfile = os.path.join(baseDir,topfile)
         self._GMX_CMD = GMX_CMD
         self._MDRUN_CMD = MDRUN_CMD
+        self._MPIRUN_CMD = MPIRUN_CMD
         self._dz = dz
         self._z0 = z0
         self._traj = mdtraj.load(self._grofile)
@@ -386,7 +387,8 @@ class constrainingConductor():
         print("Running {}...".format(output))
 
         with open('mdrun_{}.log'.format(output), 'w') as f:
-            p = subprocess.Popen('{0} {1} -deffnm {2}'.format(self._GMX_CMD,
+            p = subprocess.Popen('{0} {1} {2} -deffnm {3}'.format(
+                self._MPIRUN_CMD, self._GMX_CMD,
                 self._MDRUN_CMD, output), shell=True, stdout=f, stderr=f)
             p.wait()
 
