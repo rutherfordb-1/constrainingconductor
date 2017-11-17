@@ -54,7 +54,12 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
             master.writePullingMdp(**stageInformation[stage])
             master.grompp(stageInformation[stage]['filename'])
             master.mdrun(stageInformation[stage]['filename'])
-            master.grofile = stageInformation[stage]['filename']+".gro"
+            try:
+                master.grofile = stageInformation[stage]['filename']+".gro"
+            except (IOError,OSError) as e:
+                print("{}.gro not found, ending sweep{}/sim{}".format(stageInformation[stage]['filename'],
+                    sweep, sim))
+                break
         os.chdir(baseDir)
 
     print('-'*10 + 'Finished sweep{}'.format(sweep) + '-'*10)
