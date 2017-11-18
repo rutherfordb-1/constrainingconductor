@@ -164,7 +164,7 @@ class constrainingConductor():
         waters = self._traj.topology.select('water and name O')
         atoms = [a for a in self._traj.topology.atoms]
         top_waters = [i for i in waters if self._traj.xyz[0,i,2] <= 
-                self._traj.unitcell_lengths[0,2]/2]
+                self._traj.unitcell_lengths[0,2]/3]
         tracer_list = np.random.choice(top_waters, self._n_tracers, replace=False)
         self._tracers =  [atoms[t].residue.index+1 for t in tracer_list]
 
