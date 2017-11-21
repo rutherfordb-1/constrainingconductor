@@ -1,6 +1,7 @@
 import numpy as np
 from optparse import OptionParser
 import os
+import glob
 import subprocess
 import itertools
 from multiprocessing import Pool
@@ -22,22 +23,22 @@ def _split_single_file(current_dir, sweep, i, j, all_forces):
 
 # sim_folder/sweep{}/sim{}
 # Force files should be moved to sweep{}
-n_sweeps = len([filename for filename in os.listdir() if 'sweep' in filename and os.path.isdir(filename)])
+sweeps = sorted(glob.glob('sweep*'))
 
 
 # Read in the forces files, splitting 
 # Them into different force files
 current_dir = os.getcwd()
-for sweep in range(n_sweeps):
-    os.chdir(os.path.join(current_dir, "sweep{}".format(sweep)))
-    N_sims = len([filename for filename in os.listdir() if 'Sim' in filename and os.path.isdir(filename)])
+for sweep in sweeps:
+    os.chdir(os.path.join(current_dir,sweep)) 
+    sims = glob.glob('Sim*')
     p = subprocess.Popen("rm forceout*.dat", shell=True, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT)
     p.wait()
 
-    for i in range(N_sims):
+    for i in range(len(sims)):
         filename = "Stage5_ZCon"+str(i)+"_pullf.xvg"
-        os.chdir(os.path.join(current_dir, "sweep{}/Sim{}".format(sweep, i)))
+        os.chdir(os.path.join(current_dir, sweep,"Sim{}".format(i)))
         with open('tracers.out', 'r') as f:
             tracers = list(f)
             N_tracer = len(tracers)
