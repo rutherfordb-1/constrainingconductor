@@ -387,8 +387,8 @@ class constrainingConductor():
         print("Running {}...".format(output))
 
         with open('mdrun_{}.log'.format(output), 'w') as f:
-            p = subprocess.Popen('{0} {1} {2} -deffnm {3}'.format(
-                self._MPIRUN_CMD, self._GMX_CMD,
+            p = subprocess.Popen('{0} {1} -deffnm {2}'.format(
+                self._MPIRUN_CMD, 
                 self._MDRUN_CMD, output), shell=True, stdout=f, stderr=f)
             p.wait()
 
