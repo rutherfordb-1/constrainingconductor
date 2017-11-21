@@ -30,6 +30,7 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
         p.wait()
         os.chdir(sim_folder)
         master.writeTracers('tracers.out')
+        master.writeWindows(os.path.join(baseDir, 'sweep{}/z_windows.out'.format(sweep)))
         
 
         for stage in range(1,6):
