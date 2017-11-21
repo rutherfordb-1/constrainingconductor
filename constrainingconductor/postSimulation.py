@@ -1,4 +1,3 @@
-from SystemSetup import *
 import numpy as np
 from optparse import OptionParser
 import os
