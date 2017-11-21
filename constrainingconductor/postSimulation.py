@@ -34,13 +34,14 @@ for sweep in range(n_sweeps):
                 stderr=subprocess.STDOUT)
     p.wait()
 
-    with open('tracers.out', 'r') as f:
-        tracers = list(f)
-        N_tracer = len(tracers)
     for i in range(N_sims):
         filename = "Stage5_ZCon"+str(i)+"_pullf.xvg"
         os.chdir(os.path.join(current_dir, "sweep{}/Sim{}".format(sweep, i)))
-        all_forces = np.loadtxt(filename, skiprows=30)
+        with open('tracers.out', 'r') as f:
+            tracers = list(f)
+            N_tracer = len(tracers)
+
+        all_forces = np.loadtxt(filename, skiprows=30, comments=["#", "@"])
         print(os.getcwd())
         # Parallel version
         with Pool() as pool:
