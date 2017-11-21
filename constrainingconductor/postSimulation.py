@@ -1,7 +1,6 @@
 import numpy as np
 from optparse import OptionParser
 import os
-import glob
 import subprocess
 import itertools
 from multiprocessing import Pool
@@ -23,7 +22,7 @@ def _split_single_file(current_dir, sweep, i, j, all_forces):
 
 # sim_folder/sweep{}/sim{}
 # Force files should be moved to sweep{}
-sweeps = sorted(glob.glob('sweep*'))
+sweeps = sorted([filename for filename in os.listdir() if 'sweep' in filename and os.path.isdir(filename)])
 
 
 # Read in the forces files, splitting 
@@ -31,7 +30,7 @@ sweeps = sorted(glob.glob('sweep*'))
 current_dir = os.getcwd()
 for sweep in sweeps:
     os.chdir(os.path.join(current_dir,sweep)) 
-    sims = glob.glob('Sim*')
+    sims = sorted([filename for filename in os.listdir() if 'Sim' in filename and os.path.isdir(filename)])
     p = subprocess.Popen("rm forceout*.dat", shell=True, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT)
     p.wait()
