@@ -13,7 +13,7 @@ from multiprocessing import Pool
 def _split_single_file(current_dir, sweep, i, j, all_forces):
     force_index = (j * N_sims) + i
     neg_forces = [-1 * force for force in all_forces[:,j+1]]
-    np.savetxt(os.path.join(current_dir, "sweep{}/forceout{}.dat".format(sweep, force_index)), np.column_stack((all_forces[:,0], neg_forces)))
+    np.savetxt(os.path.join(current_dir, "{}/forceout{}.dat".format(sweep, force_index)), np.column_stack((all_forces[:,0], neg_forces)))
 
     return 1
 
