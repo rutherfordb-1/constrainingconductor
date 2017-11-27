@@ -31,6 +31,7 @@ current_dir = os.getcwd()
 for sweep in sweeps:
     os.chdir(os.path.join(current_dir,sweep)) 
     sims = sorted([filename for filename in os.listdir() if 'Sim' in filename and os.path.isdir(filename)])
+    N_sims = len(sims)
     p = subprocess.Popen("rm forceout*.dat", shell=True, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT)
     p.wait()
