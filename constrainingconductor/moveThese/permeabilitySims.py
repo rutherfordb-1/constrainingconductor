@@ -68,12 +68,12 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                 }
 
             if stage==5 and stage5_lmps:
+               force_indices = [sim + int(i*len(master.windows)/master.n_tracers) 
+                    for i in range(master.n_tracers)]
                 lmpsUtils.lmps_conversion(stageInformation[4]['filename']+".gro",
                         master.windows[sim::master.n_sims],
                         master.tracers, sim)
-                force_indices = [sim + int(i*len(master.windows)/master.n_tracers) 
-                    for i in range(master.n_tracers)]
-
+                
                 master.lmprun(stageInformation[5]['filename']+'_lmps',
                         'Stage5_ZCon.input')
 
