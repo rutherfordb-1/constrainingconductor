@@ -13,7 +13,7 @@ from multiprocessing import Pool
 def _split_single_file(current_dir, sweep, i, j, all_forces):
     force_index = (j * N_sims) + i
     neg_forces = [-1 * force for force in all_forces[:,j+1]]
-    np.savetxt(os.path.join(current_dir, "sweep{}/forceout{}.dat".format(sweep, force_index)), np.column_stack((all_forces[:,0], neg_forces)))
+    np.savetxt(os.path.join(current_dir, "{}/forceout{}.dat".format(sweep, force_index)), np.column_stack((all_forces[:,0], neg_forces)))
 
     return 1
 
@@ -31,6 +31,7 @@ current_dir = os.getcwd()
 for sweep in sweeps:
     os.chdir(os.path.join(current_dir,sweep)) 
     sims = sorted([filename for filename in os.listdir() if 'Sim' in filename and os.path.isdir(filename)])
+    N_sims = len(sims)
     p = subprocess.Popen("rm forceout*.dat", shell=True, stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT)
     p.wait()
