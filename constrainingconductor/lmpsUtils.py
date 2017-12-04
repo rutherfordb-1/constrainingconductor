@@ -119,7 +119,8 @@ def lmps_conversion(eq_structure, windows, tracers, sim_number):
     print("*"*20)
     print("Converting in {}".format(os.getcwd()))
     print("*"*20)
-    p = subprocess.Popen("cp {} . ".format(Lmp_FF_file))
+    p = subprocess.Popen("cp {} . ".format(Lmp_FF_file), shell=True, 
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     p.wait()
     _prepare_lmps(eq_structure, windows, 
                 tracers, sim_number)
