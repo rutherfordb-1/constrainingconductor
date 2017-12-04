@@ -404,9 +404,9 @@ class constrainingConductor():
         print("LmpRunning {}...".format(output))
 
         with open('lmprun_{}.log'.format(output), 'w') as f:
-            p = subprocess.Popen('{0} {1} < {2}'.format(
+            p = subprocess.Popen('{0} {1} < {2} >& {3}'.format(
                 self._MPIRUN_CMD,
-                self._LMP_CMD, lmp_input), shell=True, stdout=f, stderr=f)
+                self._LMP_CMD, lmp_input, f.name), shell=True, stdout=f, stderr=f)
             p.wait()
         if not os.path.exists('restartfile'):
             print("ERROR: Lmps simulation failed")
