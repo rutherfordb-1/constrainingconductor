@@ -1,5 +1,5 @@
 from constrainingconductor import constrainingConductor
-import lmpsUtils
+from constrainingconductor import lmpsUtils
 import os
 import pdb
 import numpy as np
