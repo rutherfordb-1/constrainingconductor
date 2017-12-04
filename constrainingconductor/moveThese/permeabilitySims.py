@@ -4,9 +4,16 @@ import os
 import pdb
 import numpy as np
 import subprocess
+import argparse 
+
 dt = 0.002
-sweepStart=0
-n_sweeps=30
+parser = argparse.ArgumentParser()
+parser.add_argument('-n', dest='n_sweeps', action='store', type=int, default=10)
+parser.add_argument('-s', dest='sweepStart', action='store', type=int, default=0)
+args = parser.parse_args()
+
+sweepStart = args.sweepStart
+n_sweeps = args.n_sweeps
 stage5_lmps = True
 
 baseDir = os.getcwd()
