@@ -15,8 +15,10 @@ MDRUN_CMD = 'mdrun -ntomp 8 -gpu_id 01'
 MPIRUN_CMD = 'srun -n 2'
 LMP_CMD = "lmp_accre"
 
-grofile='md_pureDSPC.gro'
-topfile='pureDSPC.top'
+#grofile='md_pureDSPC.gro'
+#topfile='pureDSPC.top'
+grofile = '11_DSPC_C18OH_Remco.gro'
+topfile = '11_DSPC_C18OH_Remco.top'
 
 master = constrainingConductor(grofile,topfile, auto_detect=True,
         center=True,baseDir=baseDir, GMX_CMD=GMX_CMD, MDRUN_CMD=MDRUN_CMD, 
@@ -40,7 +42,9 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
         master.writeWindows(os.path.join(baseDir, 'sweep{}/z_windows.out'.format(sweep)))
         
 
-        for stage in range(1,6):
+        #for stage in range(1,6):
+        if True:
+            stage = 5
             stageInformation = { 
                 1: {'filename':"Stage1_Weak{}".format(sim), 'pull_coord_k':40, 
                     'simWindows':master.windows[sim]*np.ones(master._n_tracers)}, 
