@@ -42,9 +42,7 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
         master.writeWindows(os.path.join(baseDir, 'sweep{}/z_windows.out'.format(sweep)))
         
 
-        #for stage in range(1,6):
-        if True:
-            stage = 5
+        for stage in range(1,6):
             stageInformation = { 
                 1: {'filename':"Stage1_Weak{}".format(sim), 'pull_coord_k':40, 
                     'simWindows':master.windows[sim]*np.ones(master._n_tracers)}, 
@@ -62,7 +60,6 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                     } 
                 }
 
-            #simWindows = master.windows[sim::master.n_sims]
             if stage==5 and stage5_lmps:
                 lmpsUtils.lmps_conversion(stageInformation[4]['filename']+".gro",
                         master.windows[sim::master.n_sims],
