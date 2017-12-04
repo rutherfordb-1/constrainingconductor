@@ -90,7 +90,7 @@ write_restart restartfile
 """)
    
 def _prepare_lmps(eq_structure, z_windows, tracers,
-        sim_number=0):
+        force_indices):
     """ Convert structure to lammps and generate input file"""
     
     traj = mdtraj.load(eq_structure)
@@ -105,8 +105,8 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     ## Load in the tracer information
     n_tracers = np.shape(tracers)[0]
 
-    force_indices = [sim_number + int(i*n_windows/n_tracers) 
-            for i, tracer_id in enumerate(tracers)]
+    #force_indices = [sim_number + int(i*len(self.windows)/n_tracers) 
+            #for i, tracer_id in enumerate(tracers)]
 
 
     with open('Stage5_ZCon.input','w') as f:
@@ -114,7 +114,7 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
         _write_rest(f, tracers, z_windows, force_indices)
 
 
-def lmps_conversion(eq_structure, windows, tracers, sim_number):
+def lmps_conversion(eq_structure, windows, tracers, force_indices):
     """ Main method to do lmps structure conversions and input writing"""
     print("*"*20)
     print("Converting in {}".format(os.getcwd()))
@@ -123,6 +123,6 @@ def lmps_conversion(eq_structure, windows, tracers, sim_number):
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     p.wait()
     _prepare_lmps(eq_structure, windows, 
-                tracers, sim_number)
+                tracers, force_indices)
 
 
