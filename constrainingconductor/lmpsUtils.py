@@ -37,7 +37,7 @@ group water type 57 58
 group tracers molecule {}
 group allbuttracers subtract water tracers
 group bilayer subtract all water
-""".format(' '.join(np.asarray(tracers,dtype=int)[:])))
+""".format(' '.join(np.asarray(tracers,dtype=str)[:])))
     ############
 
     ########
@@ -75,7 +75,7 @@ dump_modify d1 append yes
 
     ############
     #for i, tracer_triplet in enumerate(tracer_information):
-    for i, tracer, window, force_index in enumerate(zip(tracers, 
+    for i, (tracer, window, force_index) in enumerate(zip(tracers, 
         z_windows,force_indices)):
         #f.write("group t{0} molecule {1}\n".format(i, tracer_triplet[0]))
         f.write("group t{0} molecule {1}\n".format(i, tracer))
