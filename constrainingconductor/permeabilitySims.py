@@ -1,4 +1,5 @@
 from constrainingconductor import constrainingConductor
+import lmpsUtils
 import os
 import pdb
 import numpy as np
@@ -6,15 +7,20 @@ import subprocess
 dt = 0.002
 sweepStart=0
 n_sweeps=30
+stage5_lmps = True
 
 baseDir = os.getcwd()
 GMX_CMD = 'gmx'
 MDRUN_CMD = 'mdrun -ntomp 8 -gpu_id 01'
+MPIRUN_CMD = 'srun -n 2'
+LMP_CMD = "lmp_accre"
 
 grofile='md_pureDSPC.gro'
 topfile='pureDSPC.top'
 
-master = constrainingConductor(grofile,topfile, auto_detect=True,center=True,baseDir=baseDir, GMX_CMD=GMX_CMD, MDRUN_CMD=MDRUN_CMD)
+master = constrainingConductor(grofile,topfile, auto_detect=True,
+        center=True,baseDir=baseDir, GMX_CMD=GMX_CMD, MDRUN_CMD=MDRUN_CMD, 
+        MPIRUN_CMD=MPIRUN_CMD, LMP_CMD=LMP_CMD)
 originalGrofile = master.grofile
 master.writeWindows('z_windows.out')
 for sweep in range(sweepStart, sweepStart+n_sweeps):
@@ -30,6 +36,7 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
         p.wait()
         os.chdir(sim_folder)
         master.writeTracers('tracers.out')
+        master.writeWindows('z_windows.out')
         master.writeWindows(os.path.join(baseDir, 'sweep{}/z_windows.out'.format(sweep)))
         
 
@@ -52,15 +59,23 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                 }
 
             #simWindows = master.windows[sim::master.n_sims]
-            master.writePullingMdp(**stageInformation[stage])
-            master.grompp(stageInformation[stage]['filename'])
-            master.mdrun(stageInformation[stage]['filename'])
-            try:
-                master.grofile = stageInformation[stage]['filename']+".gro"
-            except (IOError,OSError) as e:
-                print("{}.gro not found, ending sweep{}/sim{}".format(stageInformation[stage]['filename'],
-                    sweep, sim))
-                break
+            if stage==5 and stage5_lmps:
+                lmpsUtils.lmps_conversion(stageInformation[4]['filename']+".gro",
+                        master.windows[sim::master.n_sims],
+                        master.tracers, sim)
+                master.lmprun(stageInformation[5]['filename']+'_lmps',
+                        'Stage5_ZCon.input')
+
+            else:
+                master.writePullingMdp(**stageInformation[stage])
+                master.grompp(stageInformation[stage]['filename'])
+                master.mdrun(stageInformation[stage]['filename'])
+                try:
+                    master.grofile = stageInformation[stage]['filename']+".gro"
+                except (IOError,OSError) as e:
+                    print("{}.gro not found, ending sweep{}/sim{}".format(stageInformation[stage]['filename'],
+                        sweep, sim))
+                    break
         os.chdir(baseDir)
 
     print('-'*10 + 'Finished sweep{}'.format(sweep) + '-'*10)

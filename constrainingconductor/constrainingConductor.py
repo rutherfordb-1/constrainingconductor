@@ -13,7 +13,8 @@ class constrainingConductor():
     all stages of Z constraining"""
     def __init__(self, grofile, topfile, z0=1.0, dz=0.2, n_windows=40, n_tracers=8, 
             z_windows=None, auto_detect=True, center=True,
-            GMX_CMD="gmx", MDRUN_CMD="gmx mdrun",MPIRUN_CMD="", baseDir=None):
+            GMX_CMD="gmx", MDRUN_CMD="gmx mdrun",MPIRUN_CMD="", 
+            LMP_CMD="lmp", baseDir=None):
 
         """
         Parameters
@@ -44,6 +45,7 @@ class constrainingConductor():
         self._GMX_CMD = GMX_CMD
         self._MDRUN_CMD = MDRUN_CMD
         self._MPIRUN_CMD = MPIRUN_CMD
+        self._LMP_CMD = LMP_CMD
         self._dz = dz
         self._z0 = z0
         self._traj = mdtraj.load(self._grofile)
@@ -384,7 +386,7 @@ class constrainingConductor():
 
     def mdrun(self, output):
         print("*"*20)
-        print("Running {}...".format(output))
+        print("MDRunning {}...".format(output))
 
         with open('mdrun_{}.log'.format(output), 'w') as f:
             p = subprocess.Popen('{0} {1} -deffnm {2}'.format(
@@ -395,6 +397,19 @@ class constrainingConductor():
         if not os.path.exists(output+".gro"):
             print("ERROR: {} not found".format(output+".gro"))
 
+        print("*"*20)
+
+    def lmprun(self, output, lmp_input):
+        print("*"*20)
+        print("LmpRunning {}...".format(output))
+
+        with open('lmprun_{}.log'.format(output), 'w') as f:
+            p = subprocess.Popen('{0} {1} < {2}'.format(
+                self._MPIRUN_CMD,
+                self._LMP_CMD, lmp_input), shell=True, stdout=f, stderr=f)
+            p.wait()
+        if not os.path.exists('restartfile'):
+            print("ERROR: Lmps simulation failed")
         print("*"*20)
 
     def _centerBilayer(self):
