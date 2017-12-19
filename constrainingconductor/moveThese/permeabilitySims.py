@@ -72,7 +72,7 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                         for i in range(master.n_tracers)]
                 lmpsUtils.lmps_conversion(stageInformation[4]['filename']+".gro",
                         master.windows[sim::master.n_sims],
-                        master.tracers, sim)
+                        master.tracers, force_indices)
 
                 master.lmprun(stageInformation[5]['filename']+'_lmps',
                         'Stage5_ZCon.input')
