@@ -68,6 +68,9 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                     }
 
             if stage==5 and stage5_lmps:
+                p = subprocess.Popen("rm forceout*", shell=True, 
+                        stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+                p.wait()
                 force_indices = [sim + int(i*len(master.windows)/master.n_tracers) 
                         for i in range(master.n_tracers)]
                 lmpsUtils.lmps_conversion(stageInformation[4]['filename']+".gro",
@@ -87,6 +90,9 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                     print("{}.gro not found, ending sweep{}/sim{}".format(stageInformation[stage]['filename'],
                         sweep, sim))
                     break
+                p = subprocess.Peopen("rm \"#\"*", shell=True,
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p.wait()
         os.chdir(baseDir)
 
     print('-'*10 + 'Finished sweep{}'.format(sweep) + '-'*10)
