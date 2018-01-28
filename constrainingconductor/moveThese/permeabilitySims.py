@@ -10,6 +10,8 @@ dt = 0.002
 parser = argparse.ArgumentParser()
 parser.add_argument('-n', dest='n_sweeps', action='store', type=int, default=10)
 parser.add_argument('-s', dest='sweepStart', action='store', type=int, default=0)
+parser.add_argument('-c', dest='grofile', action='store', type=str, default=None)
+parser.add_argument('-p', dest='topfile', action='store', type=str, default=None)
 args = parser.parse_args()
 
 sweepStart = args.sweepStart
@@ -24,8 +26,10 @@ LMP_CMD = "lmp_accre"
 
 #grofile='md_pureDSPC.gro'
 #topfile='pureDSPC.top'
-grofile = '11_DSPC_C18OH_Remco.gro'
-topfile = '11_DSPC_C18OH_Remco.top'
+grofile = args.grofile
+topfile = args.topfile
+#grofile = '11_DSPC_C18OH_Remco.gro'
+#topfile = '11_DSPC_C18OH_Remco.top'
 
 master = constrainingConductor(grofile,topfile, auto_detect=True,
         center=True,baseDir=baseDir, GMX_CMD=GMX_CMD, MDRUN_CMD=MDRUN_CMD, 
