@@ -8,7 +8,7 @@ import argparse
 
 Lmp_FF_file = "/raid6/homes/ahy3nz/Programs/setup/FF/gromos53a6/LammpsOostenbrink.txt"
 
-def _write_input_header(f, temp=305.0, Nrun=380000, Nprint=1000, 
+def _write_input_header(f, temp=305.0, Nrun=1000000, Nprint=1000, 
         structure_file='Stage4_Eq0.lammpsdata'):
     f.write("""clear
 variable Nprint equal {Nprint} 
@@ -64,13 +64,15 @@ fix 12 bilayer nvt temp ${temperature} ${temperature} 100.0
 fix 5 bilayer momentum 1 linear 1 1 1
 thermo ${Nprint}
 dump d2 all custom 40000 trajectory.lammps id type xu yu zu
-dump_modify d2 format line "%d %d %.3f %.3f %.3f" append yes 
+dump_modify d2 format "%d %d %.3f %.3f %.3f" append yes 
 
 dump d1 tracers custom 1000 tracerpos.xyz id mass x y z vx vy vz fx fy fz
 dump_modify d1 append yes
 
 
 """)
+
+#dump_modify d2 format line "%d %d %.3f %.3f %.3f" append yes 
     for i, (tracer, window, force_index) in enumerate(zip(tracers, 
         z_windows,force_indices)):
         f.write("group t{0} molecule {1}\n".format(i, tracer))
