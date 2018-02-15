@@ -4,6 +4,9 @@ from multiprocessing import Pool
 import os
 import itertools
 import glob
+"""
+Forceout files are located in each respective simulation directory,
+but this script copies them one level up into the sweep directory"""
 
 def copy_force_files(curr_dir, sweep):
     """ Thread function to copy files"""
