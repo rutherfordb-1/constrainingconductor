@@ -2,6 +2,10 @@ import os
 import numpy as np
 import subprocess
 import pdb
+"""
+This script just runs each stage5 simulation on edison
+given the proper input script
+"""
 
 def _write_sbatch(sbatch_script, sweepnum, simnum):
     with open(sbatch_script, 'w') as f:
