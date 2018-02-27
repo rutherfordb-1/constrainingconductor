@@ -107,9 +107,9 @@ def convert(correct_structure):
     dspc.rotate(angles=[0.0,0.0,-math.pi/4.0])
     dppc = Gbb(xml_prototype=base_path+'DPPC.xml',name='dppc')
     dppc.rotate(angles=[0.0,0.0,-math.pi/4.0])
-    acid12 = Gbb(xml_prototype=base_path+'c12-acid.xml',name='acid12')
-    acid16 = Gbb(xml_prototype=base_path+'c16-acid.xml',name='acid16')
-    acid22 = Gbb(xml_prototype=base_path+'c22-acid.xml',name='acid22')
+    acd12 = Gbb(xml_prototype=base_path+'c12-acid.xml',name='acd12')
+    acd16 = Gbb(xml_prototype=base_path+'c16-acid.xml',name='acd16')
+    acd22 = Gbb(xml_prototype=base_path+'c22-acid.xml',name='acd22')
     alc12 = Gbb(xml_prototype=base_path+'c12-alcohol.xml',name='alc12')
     alc14 = Gbb(xml_prototype=base_path+'c14-alcohol.xml',name='alc14')
     alc16 = Gbb(xml_prototype=base_path+'c16-alcohol.xml',name='alc16')
@@ -129,9 +129,9 @@ def convert(correct_structure):
     #DSPC thickness really 16
     lipids = [(dspc,  0.5 , 16.0),
               (dppc,  0, 13.0),
-              (acid12,0, 14.0),
-              (acid16,0, 22.0),
-              (acid22,0, 16.0),
+              (acd12,0, 14.0),
+              (acd16,0, 22.0),
+              (acd22,0, 16.0),
               (alc12, 0, 13.0),
               (alc14, 0, 14.0),
               (alc16, 0, 13.0),
