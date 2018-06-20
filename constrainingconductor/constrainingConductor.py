@@ -228,15 +228,20 @@ class constrainingConductor():
 
         #Bond parameters 
         constraint_algorithm = 'lincs'
-        constraints = 'all-bonds'
+        constraints = 'h-bonds'
         lincs_iter = 1
         lincs_order = 4
         
         #Neighbor searching
         cutoff_scheme = 'Verlet'
+        nstype='grid'
+        vdwtype='cutoff'
+        vdwmodifier='force-switch'
         nstlist = 10
-        rcoulomb = 1.4
-        rvdw = 1.4
+        rlist = 1.2
+        rvdw =  1.2
+        rvdw_switch = 1.0
+        rcoulomb = 1.2
         
         #Electrostatics
         coulombtype = 'PME'
@@ -246,14 +251,14 @@ class constrainingConductor():
         #Temperature coupling
         tcoupl = 'nose-hoover'
         tc_grps = '{:8s}\t{:8s}'.format('non-water', 'water')
-        tau_t = '{:8s}\t{:8s}'.format('0.4', '0.4')
+        tau_t = '{:8s}\t{:8s}'.format('1.0', '1.0')
         ref_t = '{:8s}\t{:8s}'.format(str(T), str(T))
 
         #Pressure coupling
         if P:
             pcoupl = 'Parrinello-Rahman'
             pcoupltype = 'semiisotropic'
-            tau_p = 2.0
+            tau_p = 10.0
             ref_p = '{} {}'.format(P,P)
             compressibility = '4.5e-5 4.5e-5'
             refcoord_scaling = 'com'
@@ -269,7 +274,7 @@ class constrainingConductor():
         continuation = 'yes'
         gen_vel = 'no'
         pbc = 'xyz'
-        DispCorr = 'EnerPres'
+        DispCorr = 'no'
 
         #Writing
         with open(filename+".mdp", 'w') as f:
@@ -297,9 +302,13 @@ class constrainingConductor():
             f.write('{:25s} = {}\n'.format('lincs-order', str(lincs_order)))
             f.write('\n; Neighbor searching\n') 
             f.write('{:25s} = {}\n'.format('cutoff-scheme', str(cutoff_scheme)))
+            f.write('{:25s} = {}\n'.format('nstype', str(nstype)))
+            f.write('{:25s} = {}\n'.format('vdwtype', str(vdwtype)))
+            f.write('{:25s} = {}\n'.format('vdw-modifier', str(vdwmodifier)))
             f.write('{:25s} = {}\n'.format('nstlist', str(nstlist)))
             f.write('{:25s} = {}\n'.format('rcoulomb', str(rcoulomb)))
             f.write('{:25s} = {}\n'.format('rvdw', str(rvdw)))
+            f.write('{:25s} = {}\n'.format('rvdw-switch', str(rvdw_switch)))
             f.write('\n; Electrostatics\n')
             f.write('{:25s} = {}\n'.format('coulombtype', str(coulombtype)))
             f.write('{:25s} = {}\n'.format('fourierspacing', str(fourierspacing)))
