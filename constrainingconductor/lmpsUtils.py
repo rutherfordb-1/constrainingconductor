@@ -11,11 +11,9 @@ Lmp_FF_file = "/raid6/homes/ahy3nz/Programs/McCabeGroup/atomistic/"
 def _write_input_header(f, temp=305.0, Nrun=1000000, Nprint=1000, 
         structure_file='Stage4_Eq0.lammpsdata'):
     f.write("""clear
-clear
 variable Nprint equal {Nprint} 
 variable Nrun equal {Nrun} 
 variable temperature equal {temp}
-
 
 units real
 atom_style full
@@ -28,12 +26,58 @@ improper_style harmonic
 special_bonds charmm
 kspace_style pppm 1.0e-4
 
-
 read_data {structure_file}
 
 neighbor 2.0 bin 
+    """.format(**locals()))
+
+    water1_type, water2_type, water_bond, water_angle = _parse_water_info(structure_file)
+    f.write("""
+group water type {0} {1}
+group tracers molecule {2}
+group allbuttracers subtract water tracers
+group bilayer subtract all water
+fix 11 all shake 0.0001 10 10000 b {3} a {4}
+""".format(water1_type, water2_type, ' '.join(np.asarray(tracers,dtype=str)[:]),
+            water_bond, water_angle))
+
+def _parse_water_info(structure_file):
+    """ Get information about the water molecules
+    Look through the lammps data file for the water's two atomtypes, bond type,
+    and angle type. The idea is to find a directive and look at the previous 3 or
+    4 lines to get the atom/bond/angle type
+
+    Parameters
+    ---------
+    structure_file : str
+        filename of the lammps structurefile
+
+    Returns
+    -------
+    water1_type : str
+    water2_type : str
+    water_bond : str
+    water_angle : str
+        """
+    lmp_lines = open(structure_file, 'r').readlines()
+    # Find Bonds directive for getting the atomtypes
+    bond_line = [line_index for line_index, line in enumerate(lmp_lines) if 'Bonds' in line][0]
+    water1_type = lmp_lines[bond_line - 4].split()[2]
+    water2_type = lmp_lines[bond_line - 3].split()[2]
+
+    # Find Angles directive for getting bondtype
+    angle_line = [line_index for line_index, line in enumerate(lmp_lines) if 'Angles' in line][0]
+    water_bond = lmp_lines[angle_line - 2].split()[1]
+
+    # Find Dihedrals directive for getting angletype
+    dihedral_line = [line_index for line_index, line in enumerate(lmp_lines) if 'Dihedrals' in line][0]
+    water_angle = lmp_lines[dihedral_line - 2].split()[1]
+
+    return water1_type, water2_type, water_bond, water_angle
 
 
+def _write_rest(f, tracers, z_windows, force_indices, record_force=True):
+    f.write("""
 reset_timestep 0
 variable ke equal ke
 variable enthalpy equal enthalpy
@@ -47,57 +91,15 @@ variable lx equal lx
 variable ly equal ly
 variable lz equal lz
 
-timestep 1.0
+timestep 2.0
 
-fix 11 all shake 0.0001 10 10000 b 9 a 1
 fix 3 all print ${Nprint} "${step} ${pe} ${press} ${temp} ${lx} ${ly} ${lz}" file system.log screen no
 fix 4 all npt temp ${temperature} ${temperature} 10.0 aniso 1.0 1.0 100.0
 fix 5 all momentum 1 linear 1 1 1
 thermo ${Nprint}
 dump d1 all dcd 5000 trajectory.dcd
-    """.format(**locals()))
+""".format(water_bond, water_angle))
 
-def _write_rest(f, tracers, z_windows, force_indices, record_force=True):
-
-    f.write("""
-group water type 57 58
-group tracers molecule {}
-group allbuttracers subtract water tracers
-group bilayer subtract all water
-""".format(' '.join(np.asarray(tracers,dtype=str)[:])))
-
-    f.write("""
-reset_timestep 0
-variable ke equal ke
-variable enthalpy equal enthalpy
-variable pe equal pe
-variable step equal step
-variable temp equal temp
-variable press equal press
-variable vol equal vol
-
-variable lx equal lx
-variable ly equal ly
-variable lz equal lz
-
-timestep 1.0
-
-fix 11 all shake 0.0001 10 10000 b 53 a 55
-fix 3 all print ${Nprint} "${step} ${pe} ${press} ${temp} ${lx} ${ly} ${lz}" file system.log screen no
-fix 4 water npt temp ${temperature} ${temperature} 100.0 aniso 1.0 1.0 1000.0
-fix 12 bilayer nvt temp ${temperature} ${temperature} 100.0 
-fix 5 bilayer momentum 1 linear 1 1 1
-thermo ${Nprint}
-dump d2 all custom 40000 trajectory.lammps id type xu yu zu
-dump_modify d2 format "%d %d %.3f %.3f %.3f" append yes 
-
-dump d1 tracers custom 1000 tracerpos.xyz id mass x y z vx vy vz fx fy fz
-dump_modify d1 append yes
-
-
-""")
-
-#dump_modify d2 format line "%d %d %.3f %.3f %.3f" append yes 
     for i, (tracer, window, force_index) in enumerate(zip(tracers, 
         z_windows,force_indices)):
         f.write("group t{0} molecule {1}\n".format(i, tracer))
@@ -121,7 +123,7 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     """ Convert structure to lammps and generate input file"""
     
     traj = mdtraj.load(eq_structure)
-    groToLmps.convert(eq_structure)
+    groToLmps.convert(eq_structure, forcefield_files=forcefield_files)
 
     ## Load in the gmx z windows, scale/shift appropriately
     z_windows = [np.round(10*(z - traj.unitcell_lengths[0][2]/2),2) for z in z_windows]
