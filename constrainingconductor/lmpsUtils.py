@@ -6,30 +6,55 @@ import numpy as np
 import mdtraj
 import argparse
 
-Lmp_FF_file = "/raid6/homes/ahy3nz/Programs/setup/FF/gromos53a6/LammpsOostenbrink.txt"
+Lmp_FF_file = "/raid6/homes/ahy3nz/Programs/McCabeGroup/atomistic/"
 
 def _write_input_header(f, temp=305.0, Nrun=1000000, Nprint=1000, 
         structure_file='Stage4_Eq0.lammpsdata'):
     f.write("""clear
+clear
 variable Nprint equal {Nprint} 
 variable Nrun equal {Nrun} 
 variable temperature equal {temp}
 
+
 units real
 atom_style full
 
-pair_style lj/cut/coul/long 14.0 14.0 
+pair_style lj/charmm/coul/long 10.0 12.0
 bond_style harmonic
-angle_style hybrid harmonic cosine/squared
-dihedral_style hybrid harmonic charmm
+angle_style charmm
+dihedral_style charmm
 improper_style harmonic
-special_bonds lj/coul 0.0 0.0 1.0 
+special_bonds charmm
 kspace_style pppm 1.0e-4
-neighbor 2.0 bin 
+
 
 read_data {structure_file}
 
-include LammpsOostenbrink.txt
+neighbor 2.0 bin 
+
+
+reset_timestep 0
+variable ke equal ke
+variable enthalpy equal enthalpy
+variable pe equal pe
+variable step equal step
+variable temp equal temp
+variable press equal press
+variable vol equal vol
+
+variable lx equal lx
+variable ly equal ly
+variable lz equal lz
+
+timestep 1.0
+
+fix 11 all shake 0.0001 10 10000 b 9 a 1
+fix 3 all print ${Nprint} "${step} ${pe} ${press} ${temp} ${lx} ${ly} ${lz}" file system.log screen no
+fix 4 all npt temp ${temperature} ${temperature} 10.0 aniso 1.0 1.0 100.0
+fix 5 all momentum 1 linear 1 1 1
+thermo ${Nprint}
+dump d1 all dcd 5000 trajectory.dcd
     """.format(**locals()))
 
 def _write_rest(f, tracers, z_windows, force_indices, record_force=True):
@@ -92,7 +117,7 @@ write_restart restartfile
 """)
    
 def _prepare_lmps(eq_structure, z_windows, tracers,
-        force_indices):
+        force_indices, forcefield_files=['foyer_charmm.xml', 'foyer_water.xml']):
     """ Convert structure to lammps and generate input file"""
     
     traj = mdtraj.load(eq_structure)
@@ -121,7 +146,7 @@ def lmps_conversion(eq_structure, windows, tracers, force_indices):
     print("*"*20)
     print("Converting in {}".format(os.getcwd()))
     print("*"*20)
-    p = subprocess.Popen("cp {} . ".format(Lmp_FF_file), shell=True, 
+    p = subprocess.Popen("cp {}/*.xml . ".format(Lmp_FF_file), shell=True, 
             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     p.wait()
     _prepare_lmps(eq_structure, windows, 
