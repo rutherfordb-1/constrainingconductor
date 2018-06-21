@@ -9,7 +9,8 @@ import argparse
 Lmp_FF_file = "/raid6/homes/ahy3nz/Programs/McCabeGroup/atomistic/"
 
 def _write_input_header(f, temp=305.0, Nrun=1000000, Nprint=1000, 
-        structure_file='Stage4_Eq0.lammpsdata'):
+        structure_file='Stage4_Eq0.lammpsdata', 
+        tracers=None, tracer_atom_indices=None):
     f.write("""clear
 variable Nprint equal {Nprint} 
 variable Nrun equal {Nrun} 
@@ -34,11 +35,12 @@ neighbor 2.0 bin
     water1_type, water2_type, water_bond, water_angle = _parse_water_info(structure_file)
     f.write("""
 group water type {0} {1}
-group tracers molecule {2}
+group tracers id {2}
 group allbuttracers subtract water tracers
 group bilayer subtract all water
 fix 11 all shake 0.0001 10 10000 b {3} a {4}
-""".format(water1_type, water2_type, ' '.join(np.asarray(tracers,dtype=str)[:]),
+""".format(water1_type, water2_type, 
+            ' '.join(np.asarray(tracer_atom_indices, dtype=str).flatten()),
             water_bond, water_angle))
 
 def _parse_water_info(structure_file):
@@ -76,7 +78,8 @@ def _parse_water_info(structure_file):
     return water1_type, water2_type, water_bond, water_angle
 
 
-def _write_rest(f, tracers, z_windows, force_indices, record_force=True):
+def _write_rest(f, z_windows, force_indices, tracer_atom_indices,
+                record_force=True):
     f.write("""
 reset_timestep 0
 variable ke equal ke
@@ -100,9 +103,9 @@ thermo ${Nprint}
 dump d1 all dcd 5000 trajectory.dcd
 """)
 
-    for i, (tracer, window, force_index) in enumerate(zip(tracers, 
-        z_windows,force_indices)):
-        f.write("group t{0} molecule {1}\n".format(i, tracer))
+    for i, (window, force_index, atom_indices) in enumerate(zip(z_windows,
+                            force_indices, tracer_atom_indices)):
+        f.write("group t{0} id {1}\n".format(i, ' '.join(atom_indices)))
 
         if record_force:
             f.write("compute tracerfz{0} t{0} reduce sum fz\n".format(i))
@@ -136,11 +139,41 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
 
     #force_indices = [sim_number + int(i*len(self.windows)/n_tracers) 
             #for i, tracer_id in enumerate(tracers)]
+    tracer_atom_indices = _get_atom_indices(traj, tracers)
 
 
     with open('Stage5_ZCon.input','w') as f:
-        _write_input_header(f, structure_file=eq_structure[:-4]+'.lammpsdata')
-        _write_rest(f, tracers, z_windows, force_indices)
+        _write_input_header(f, structure_file=eq_structure[:-4]+'.lammpsdata', 
+                            tracers=tracers, tracer_atom_indices=tracer_atom_indices)
+        _write_rest(f, z_windows, force_indices, tracer_atom_indices)
+
+def _get_atom_indices(traj, tracers):
+    """ Get atom indices correspond to each tracer molecule
+
+    Parameters
+    ---------
+    traj : mdTraj.Trajectory
+    tracers : n x 1 tuple
+        List of molecule IDs or residue IDs
+
+    Returns
+    ------
+    tracer_indices: n x 3 tuple
+        List where each element corresponds to each molecule
+        Each 3-tuple corresponds to the atom indices in that molecule
+
+    Notes
+    -----
+    MDtraj does everything 0-indexed, but we want everything 1-indexed
+    """
+    tracer_indices = []
+    for tracer in tracers:
+        atoms = [a.index + 1 for a in traj.topology.residue(tracer-1).atoms]
+        tracer_indices.append(atoms)
+
+    return tracer_indices
+
+
 
 
 def lmps_conversion(eq_structure, windows, tracers, force_indices):
