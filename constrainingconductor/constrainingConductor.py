@@ -305,6 +305,7 @@ class constrainingConductor():
             f.write('{:25s} = {}\n'.format('nstype', str(nstype)))
             f.write('{:25s} = {}\n'.format('vdwtype', str(vdwtype)))
             f.write('{:25s} = {}\n'.format('vdw-modifier', str(vdwmodifier)))
+            f.write('{:25s} = {}\n'.format('rlist', str(rlist)))
             f.write('{:25s} = {}\n'.format('nstlist', str(nstlist)))
             f.write('{:25s} = {}\n'.format('rcoulomb', str(rcoulomb)))
             f.write('{:25s} = {}\n'.format('rvdw', str(rvdw)))
