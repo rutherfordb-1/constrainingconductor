@@ -33,6 +33,8 @@ neighbor 2.0 bin
     """.format(**locals()))
 
     water1_type, water2_type, water_bond, water_angle = _parse_water_info(structure_file)
+
+
     f.write("""
 group water type {0} {1}
 group tracers id {2}
@@ -105,7 +107,8 @@ dump d1 all dcd 5000 trajectory.dcd
 
     for i, (window, force_index, atom_indices) in enumerate(zip(z_windows,
                             force_indices, tracer_atom_indices)):
-        f.write("group t{0} id {1}\n".format(i, ' '.join(atom_indices)))
+        f.write("group t{0} id {1}\n".format(i, ' '.join(np.asarray(atom_indices, 
+                                                        dtype=str))))
 
         if record_force:
             f.write("compute tracerfz{0} t{0} reduce sum fz\n".format(i))
