@@ -101,7 +101,7 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                     print("{}.gro not found, ending sweep{}/sim{}".format(stageInformation[stage]['filename'],
                         sweep, sim))
                     break
-                p = subprocess.Peopen("rm \"#\"*", shell=True,
+                p = subprocess.Popen("rm \"#\"*", shell=True,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 p.wait()
         os.chdir(baseDir)
