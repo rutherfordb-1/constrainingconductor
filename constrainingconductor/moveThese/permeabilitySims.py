@@ -20,8 +20,8 @@ stage5_lmps = True
 
 baseDir = os.getcwd()
 GMX_CMD = 'gmx'
-MDRUN_CMD = 'mdrun -ntomp 8 -gpu_id 01'
-MPIRUN_CMD = 'srun -n 2'
+MDRUN_CMD = 'gmx mdrun -ntomp 8 -ntmpi 2 -gpu_id 01'
+MPIRUN_CMD = ''
 LMP_CMD = "lmp_accre"
 
 #grofile='md_pureDSPC.gro'
