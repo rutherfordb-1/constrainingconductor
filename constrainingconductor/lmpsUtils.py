@@ -98,7 +98,7 @@ fix 4 all npt temp ${temperature} ${temperature} 10.0 aniso 1.0 1.0 100.0
 fix 5 all momentum 1 linear 1 1 1
 thermo ${Nprint}
 dump d1 all dcd 5000 trajectory.dcd
-""".format(water_bond, water_angle))
+""")
 
     for i, (tracer, window, force_index) in enumerate(zip(tracers, 
         z_windows,force_indices)):
