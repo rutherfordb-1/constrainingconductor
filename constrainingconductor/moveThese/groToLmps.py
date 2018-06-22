@@ -14,7 +14,7 @@ import atomistic.c24oh.oh24 as oh24
 import atomistic.c12ffa.ffa12 as ffa12
 import atomistic.c16ffa.ffa16 as ffa16
 import atomistic.c24ffa.ffa24 as ffa24
-import atomistic.tip3p.SOL as SOL
+import atomistic.tip3p_pppm.SOL as SOL
 
 
 #if __name__ == "__main__":
