@@ -132,10 +132,16 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     groToLmps.convert(eq_structure, forcefield_files=forcefield_files)
 
     ## Load in the gmx z windows, scale/shift appropriately
-    z_windows = [np.round(10*(z - traj.unitcell_lengths[0][2]/2),2) for z in z_windows]
+    #z_windows = [np.round(10*(z - traj.unitcell_lengths[0][2]/2),2) for z in z_windows]
+    # Scale and shift gromacs windows accordingly
+    # Units are now angstroms and the box still is bottom left origin
+    # Correct for PBCs
+    for i, val in enumerate(z_windows):
+        z_windows[i] = val*10 
+        if val < 0:
+            z_windows[i] += 10*traj.unitcell_lengths[0][2]
     np.savetxt('z_windows_lmps.out', z_windows)
     n_windows = np.shape(z_windows)[0]
-    dz = abs(z_windows[0]-z_windows[1])
 
     ## Load in the tracer information
     n_tracers = np.shape(tracers)[0]
