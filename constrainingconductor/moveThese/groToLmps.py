@@ -64,5 +64,11 @@ def convert(correct_structure,
     
     ff = Forcefield(forcefield_files=forcefield_files)
     structure = ff.apply(structure, assert_dihedral_params=False)
+
+    # Because mbuild compounds don't pass charges to parmed structures, need to
+    # manuallly set the charges AFTER the force field has been applied
+    for i, j in zip(system.particles(), structure.atoms):
+        j.charge = i.charge
+
     
     write_lammpsdata(structure, correct_structure[:-4]+'.lammpsdata')
