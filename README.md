@@ -1,4 +1,4 @@
-# Organizing a set of pulling simulations
+# Organizing a set of pulling simulations (for use with CHARMM force field)  
 
 constrainingConductor is a python class that contains basic information about a molecular system (gro and top files). From these, and parameters you can pass in, MDP files are written, grompp'd, and simulated from this constrainingConductor class.
 

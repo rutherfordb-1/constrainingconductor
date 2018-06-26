@@ -20,8 +20,8 @@ stage5_lmps = True
 
 baseDir = os.getcwd()
 GMX_CMD = 'gmx'
-MDRUN_CMD = 'mdrun -ntomp 8 -gpu_id 01'
-MPIRUN_CMD = 'srun -n 2'
+MDRUN_CMD = 'gmx mdrun -ntomp 8 -ntmpi 2 -gpu_id 01'
+MPIRUN_CMD = ''
 LMP_CMD = "lmp_accre"
 
 #grofile='md_pureDSPC.gro'
@@ -101,7 +101,7 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                     print("{}.gro not found, ending sweep{}/sim{}".format(stageInformation[stage]['filename'],
                         sweep, sim))
                     break
-                p = subprocess.Peopen("rm \"#\"*", shell=True,
+                p = subprocess.Popen("rm \"#\"*", shell=True,
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 p.wait()
         os.chdir(baseDir)

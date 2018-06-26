@@ -1,0 +1,7 @@
+*.egg-info
+*.xtc
+*.gro
+
+*.py[cod]
+*.egg
+*.ipynb_checkpoints
