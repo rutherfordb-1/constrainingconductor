@@ -4,6 +4,10 @@ import mdtraj
 import mbuild as mb
 from mbuild.formats.lammpsdata import write_lammpsdata
 from foyer import Forcefield
+from simtk.openmm.app.simulation import Simulation
+from simtk.openmm.app.pdbreporter import PDBReporter
+from simtk.openmm.openmm import LangevinIntegrator
+import simtk.unit as u
 
 # Import statements for molecule prototypes
 import atomistic.dppc.DPPC as DPPC
@@ -39,11 +43,15 @@ def convert(correct_structure,
     ientify atoms in the mb Compound and pmd Structure
         """
     system = mb.Compound()
-    for i in range(72):
-        system.add(DPPC.DPPC(use_atom_name=False))
-    
-    for i in range(2160):
+    for i in range(64):
+        system.add(DSPC.DSPC(use_atom_name=False))
+    for i in range(1280):
         system.add(SOL.SOL(use_atom_name=False))
+    for i in range(64):
+        system.add(DSPC.DSPC(use_atom_name=False))
+    for i in range(1280):
+        system.add(SOL.SOL(use_atom_name=False))
+
     system.update_coordinates(correct_structure)
     
     
@@ -56,10 +64,5 @@ def convert(correct_structure,
     
     ff = Forcefield(forcefield_files=forcefield_files)
     structure = ff.apply(structure, assert_dihedral_params=False)
-    
-    # Because mbuild compounds don't pass charges to parmed structures, need to
-    # manuallly set the charges AFTER the force field has been applied
-    for i, j in zip(system.particles(), structure.atoms):
-        j.charge = i.charge
     
     write_lammpsdata(structure, correct_structure[:-4]+'.lammpsdata')
