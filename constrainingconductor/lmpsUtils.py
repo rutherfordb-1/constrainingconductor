@@ -91,6 +91,7 @@ variable step equal step
 variable temp equal temp
 variable press equal press
 variable vol equal vol
+variable time equal time
 
 variable lx equal lx
 variable ly equal ly
@@ -113,7 +114,7 @@ dump d1 all dcd 5000 trajectory.dcd
         if record_force:
             f.write("compute tracerfz{0} t{0} reduce sum fz\n".format(i))
             f.write("variable redforce{0} equal c_tracerfz{0}\n".format(i))
-            f.write("fix pt{0} all print 3 \"${{step}} ${{redforce{0}}}\" append forceout{1}.dat screen no\n".format(i, force_index))
+            f.write("fix pt{0} all print 3 \"${{step}} ${{time}} ${{redforce{0}}}\" append forceout{1}.dat screen no\n".format(i, force_index))
 
         f.write("fix 6{0} t{0} recenter NULL NULL {1} shift t{0}\n".format(i, window))
         f.write("fix 7{0} t{0} momentum 1 linear 0 0 1\n".format(i))
