@@ -63,7 +63,7 @@ for sweep in range(sweepStart, sweepStart+n_sweeps):
                         'pull_coord_k':500, 'moving':True, 'P':None,
                         'simWindows': master.windows[sim::master.n_sims]
                         }, 
-                    4: {'filename':"Stage4_Eq{}".format(sim), 'pull_coord_k':1000, 
+                    4: {'filename':"Stage4_Eq{}".format(sim), 'pull_coord_k':5000, 
                         'simWindows': master.windows[sim::master.n_sims]},
                     5: {'filename':"Stage5_ZCon{}".format(sim), 'pull_coord_k':1000, 
                         'pull_nstfout':int(0.01/dt), 
