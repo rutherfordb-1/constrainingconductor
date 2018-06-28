@@ -137,12 +137,13 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     # Scale and shift gromacs windows accordingly
     # Units are now angstroms and the box still is bottom left origin
     # Correct for PBCs
+    new_z_windows = np.zeros_like(z_windows)
     for i, val in enumerate(z_windows):
-        z_windows[i] = val*10 
+        new_z_windows[i] = val*10 
         if val < 0:
-            z_windows[i] += 10*traj.unitcell_lengths[0][2]
-    np.savetxt('z_windows_lmps.out', z_windows)
-    n_windows = np.shape(z_windows)[0]
+            new_z_windows[i] += 10*traj.unitcell_lengths[0][2]
+    np.savetxt('z_windows_lmps.out', new_z_windows)
+    n_windows = np.shape(new_z_windows)[0]
 
     ## Load in the tracer information
     n_tracers = np.shape(tracers)[0]
@@ -155,7 +156,7 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     with open('Stage5_ZCon.input','w') as f:
         _write_input_header(f, structure_file=eq_structure[:-4]+'.lammpsdata', 
                             tracers=tracers, tracer_atom_indices=tracer_atom_indices)
-        _write_rest(f, z_windows, force_indices, tracer_atom_indices)
+        _write_rest(f, new_z_windows, force_indices, tracer_atom_indices)
 
 def _get_atom_indices(traj, tracers):
     """ Get atom indices correspond to each tracer molecule
