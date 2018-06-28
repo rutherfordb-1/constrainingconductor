@@ -99,7 +99,7 @@ variable lz equal lz
 
 timestep 2.0
 
-fix 3 all print ${Nprint} "${step} ${pe} ${press} ${temp} ${lx} ${ly} ${lz}" file system.log screen no
+fix 3 all print ${Nprint} "${step} ${time} ${pe} ${press} ${temp} ${lx} ${ly} ${lz}" file system.log screen no
 fix 4 all npt temp ${temperature} ${temperature} 10.0 aniso 1.0 1.0 100.0
 fix 5 all momentum 1 linear 1 1 1
 thermo ${Nprint}
