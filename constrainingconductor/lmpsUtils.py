@@ -96,7 +96,6 @@ def _parse_water_info(structure_file):
 def _write_rest(f, z_windows, force_indices, tracer_atom_indices,
                 record_force=True):
     f.write("""
-reset_timestep 0
 variable ke equal ke
 variable enthalpy equal enthalpy
 variable pe equal pe
