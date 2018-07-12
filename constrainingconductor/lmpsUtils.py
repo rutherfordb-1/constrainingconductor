@@ -26,10 +26,23 @@ dihedral_style charmm
 improper_style harmonic
 special_bonds charmm
 kspace_style pppm 1.0e-4
+neighbor 2.0 bin 
 
 read_data {structure_file}
+write_restart sim.restart.0
 
+clear
+read_restart sim.restart.*
+kspace_style pppm 1.0e-4
 neighbor 2.0 bin 
+
+variable Nprint equal {Nprint} 
+variable Nrun equal {Nrun} 
+variable temperature equal {temp}
+
+restart 50000 sim.restart.*
+
+
     """.format(**locals()))
 
     water1_type, water2_type, water_bond, water_angle = _parse_water_info(structure_file)
