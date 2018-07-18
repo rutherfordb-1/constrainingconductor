@@ -109,7 +109,7 @@ variable lx equal lx
 variable ly equal ly
 variable lz equal lz
 
-timestep 2.0
+timestep 1.0
 
 fix 3 all print ${Nprint} "${step} ${time} ${pe} ${press} ${temp} ${lx} ${ly} ${lz}" file system.log screen no
 fix 4 all npt temp ${temperature} ${temperature} 10.0 aniso 1.0 1.0 100.0
@@ -132,7 +132,7 @@ dump d1 all dcd 5000 trajectory.dcd
         f.write("fix 7{0} t{0} momentum 1 linear 0 0 1\n".format(i))
         f.write("\n")
     f.write("""
-run ${Nrun}
+run ${Nrun} upto
 
 write_restart restartfile
 """)
