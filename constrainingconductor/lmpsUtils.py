@@ -26,10 +26,23 @@ dihedral_style charmm
 improper_style harmonic
 special_bonds charmm
 kspace_style pppm 1.0e-4
+neighbor 2.0 bin 
 
 read_data {structure_file}
+write_restart sim.restart.0
 
+clear
+read_restart sim.restart.*
+kspace_style pppm 1.0e-4
 neighbor 2.0 bin 
+
+variable Nprint equal {Nprint} 
+variable Nrun equal {Nrun} 
+variable temperature equal {temp}
+
+restart 50000 sim.restart.*
+
+
     """.format(**locals()))
 
     water1_type, water2_type, water_bond, water_angle = _parse_water_info(structure_file)
@@ -83,7 +96,6 @@ def _parse_water_info(structure_file):
 def _write_rest(f, z_windows, force_indices, tracer_atom_indices,
                 record_force=True):
     f.write("""
-reset_timestep 0
 variable ke equal ke
 variable enthalpy equal enthalpy
 variable pe equal pe
@@ -97,7 +109,7 @@ variable lx equal lx
 variable ly equal ly
 variable lz equal lz
 
-timestep 2.0
+timestep 1.0
 
 fix 3 all print ${Nprint} "${step} ${time} ${pe} ${press} ${temp} ${lx} ${ly} ${lz}" file system.log screen no
 fix 4 all npt temp ${temperature} ${temperature} 10.0 aniso 1.0 1.0 100.0
@@ -120,7 +132,7 @@ dump d1 all dcd 5000 trajectory.dcd
         f.write("fix 7{0} t{0} momentum 1 linear 0 0 1\n".format(i))
         f.write("\n")
     f.write("""
-run ${Nrun}
+run ${Nrun} upto
 
 write_restart restartfile
 """)
