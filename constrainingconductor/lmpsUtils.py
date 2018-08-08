@@ -138,7 +138,7 @@ write_restart restartfile
 """)
    
 def _prepare_lmps(eq_structure, z_windows, tracers,
-        force_indices, forcefield_files=['foyer_charmm.xml', 'foyer_water.xml']):
+        force_indices, forcefield_files=['foyer_charmm.xml']):
     """ Convert structure to lammps and generate input file"""
     
     traj = mdtraj.load(eq_structure)
