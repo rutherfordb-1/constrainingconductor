@@ -36,6 +36,10 @@ def convert(correct_structure,
     Notes
     -----
     We are making a 'fake' mbuild compound and then updating the coordinates. 
+    This is done to preserve compound hierarchies and residue names
+    Note the generation of an extra box according to the correct_structure's
+    periodicity. This is because update_coordinates doesn't carry over
+    box/periodicity information.
     The fake mbuild compound is then converted to parmed structure and then atomtyped
     It is *necessary* to update how we are making this fakae mbuild compound
     It will help to look at the gmx top file to see the order of the molecules
@@ -53,6 +57,7 @@ def convert(correct_structure,
         system.add(SOL.SOL(use_atom_name=False))
 
     system.update_coordinates(correct_structure)
+    system_box = mb.Box(lengths=mb.load(correct_structure).periodicity)
     
     
     # In order to avoid using smarts, define custom elements in parmed
@@ -60,7 +65,7 @@ def convert(correct_structure,
     for num, i in enumerate(system.particles()):
         i.name = "_{}".format(i.name)
     
-    structure = system.to_parmed(box=system.boundingbox, residues=set([p.parent.name for p in system.particles()]))
+    structure = system.to_parmed(box=system_box, residues=set([p.parent.name for p in system.particles()]))
     
     ff = Forcefield(forcefield_files=forcefield_files)
     structure = ff.apply(structure, assert_dihedral_params=False)
