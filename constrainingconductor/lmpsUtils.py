@@ -152,8 +152,10 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     new_z_windows = np.zeros_like(z_windows)
     for i, val in enumerate(z_windows):
         new_z_windows[i] = val*10 
-        if val < 0:
+        if val < 2:
             new_z_windows[i] += 10*traj.unitcell_lengths[0][2]
+        if val >= traj.unitcell_lengths[0][2] - 2:
+            new_z_windows[i] -= 10*traj.unitcell_lengths[0][2]
     np.savetxt('z_windows_lmps.out', new_z_windows)
     n_windows = np.shape(new_z_windows)[0]
 
