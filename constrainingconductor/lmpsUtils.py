@@ -152,14 +152,15 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     # Units are now angstroms and the box still is bottom left origin
     # Correct for PBCs
     new_z_windows = np.zeros_like(z_windows)
-    for i, (val, atom_index) in enumerate(zip(z_windows, tracer_atom_indices[::3])):
+    for i, (val, atom_indices) in enumerate(zip(z_windows, tracer_atom_indices)):
         new_z_windows[i] = val*10 
         # If the windows are too close to the periodic box boundaries, 
         # the lammps simulation will crash
         # Furthermore, ensure the windows are on the same 'side' as the tracers
         # themselves
+        print(atom_indices)
         if val < 0.2 or val >= traj.unitcell_lengths[0][2] - 0.2:
-            if traj.xyz[0, atom_index-1, 2] < midplane:
+            if traj.xyz[0, atom_indices[0]-1, 2] < midplane:
                 new_z_windows[i] = 2
             else:
                 new_z_windows[i] = 10*traj.unitcell_lengths[0][2] - 2
