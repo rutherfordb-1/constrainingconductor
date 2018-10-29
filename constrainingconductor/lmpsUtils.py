@@ -143,6 +143,8 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     
     traj = mdtraj.load(eq_structure)
     groToLmps.convert(eq_structure, forcefield_files=forcefield_files)
+    midplane = np.mean(traj.unitcell_lengths[:,2])
+    tracer_atom_indices = _get_atom_indices(traj, tracers)
 
     ## Load in the gmx z windows, scale/shift appropriately
     #z_windows = [np.round(10*(z - traj.unitcell_lengths[0][2]/2),2) for z in z_windows]
@@ -150,23 +152,23 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     # Units are now angstroms and the box still is bottom left origin
     # Correct for PBCs
     new_z_windows = np.zeros_like(z_windows)
-    for i, val in enumerate(z_windows):
+    for i, (val, atom_index) in enumerate(zip(z_windows, tracer_atom_indices[::3])):
         new_z_windows[i] = val*10 
         # If the windows are too close to the periodic box boundaries, 
         # the lammps simulation will crash
-        if val < 0.2:
-            new_z_windows[i] = 2
-        if val >= traj.unitcell_lengths[0][2] - 0.2:
-            new_z_windows[i] = 10 * traj.unitcell_lengths[0][2] - 2 
+        # Furthermore, ensure the windows are on the same 'side' as the tracers
+        # themselves
+        if val < 0.2 or val >= traj.unitcell_lengths[0][2] - 0.2:
+            if traj.xyz[0, atom_index-1, 2] < midplane:
+                new_z_windows[i] = 2
+            else:
+                new_z_windows[i] = 10*traj.unitcell_lengths[0][2] - 2
     np.savetxt('z_windows_lmps.out', new_z_windows)
     n_windows = np.shape(new_z_windows)[0]
 
     ## Load in the tracer information
     n_tracers = np.shape(tracers)[0]
 
-    #force_indices = [sim_number + int(i*len(self.windows)/n_tracers) 
-            #for i, tracer_id in enumerate(tracers)]
-    tracer_atom_indices = _get_atom_indices(traj, tracers)
 
 
     with open('Stage5_ZCon.input','w') as f:
