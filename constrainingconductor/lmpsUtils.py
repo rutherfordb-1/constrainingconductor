@@ -143,7 +143,7 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
     
     traj = mdtraj.load(eq_structure)
     groToLmps.convert(eq_structure, forcefield_files=forcefield_files)
-    midplane = np.mean(traj.unitcell_lengths[:,2])
+    midplane = np.mean(traj.unitcell_lengths[:,2])/2
     tracer_atom_indices = _get_atom_indices(traj, tracers)
 
     ## Load in the gmx z windows, scale/shift appropriately
@@ -158,7 +158,6 @@ def _prepare_lmps(eq_structure, z_windows, tracers,
         # the lammps simulation will crash
         # Furthermore, ensure the windows are on the same 'side' as the tracers
         # themselves
-        print(atom_indices)
         if val < 0.2 or val >= traj.unitcell_lengths[0][2] - 0.2:
             if traj.xyz[0, atom_indices[0]-1, 2] < midplane:
                 new_z_windows[i] = 2
