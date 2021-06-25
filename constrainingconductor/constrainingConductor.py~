@@ -181,8 +181,8 @@ class constrainingConductor():
 
         # Pulling parameters
         pull = 'yes'
-        pull_print_com = 'no'
-        pull_print_ref_value = 'yes'
+        pull_print_com = 'yes'
+        pull_print_ref_value = 'no'
         pull_ncoords = self._n_tracers
         pull_ngroups = self._n_tracers
         pull_group_names = ['Tracer'+str(i) for i in self._tracers]
